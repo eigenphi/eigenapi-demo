@@ -1,1 +1,1 @@
-eigenapi-client==0.0.7
+eigenapi-client==0.0.8
