@@ -2,18 +2,19 @@
 
 from eigenapi_client.Client import Client
 from eigenapi_client.endpoints.schema import Transaction
+import asyncio
 
 import APIKeys
 
 
-def callback_example(tx: Transaction):
-    print('receive a new transaction:', tx.transactionHash, tx.blockTimestamp)
-
+def callback_example(tx):
+    print('receive a new transaction:', tx.transactionHash)
 
 if __name__ == "__main__":
     apikey = APIKeys.APIKEY
     client = Client(apikey)
-    try:
-        client.subscribe_transactions(callback=callback_example)
-    except Exception as e:
-        print(f"Exception：{e} Last processing time {client}")
+    while True:
+        try:
+            asyncio.run(client.subscribe_transactions(filter_duplicate=True, callback=callback_example), debug=True)
+        except Exception as e:
+            print(f"Exception：{e}")

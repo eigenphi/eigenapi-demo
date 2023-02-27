@@ -2,6 +2,7 @@
 #!/usr/bin/env python3
 import datetime
 import time
+from threading import Thread
 
 from eigenapi_client.Client import Client
 from eigenapi_client.endpoints.schema import Transaction
@@ -11,9 +12,10 @@ import APIKeys
 
 def latest_block():
     client = Client(apikey)
-    eth_latest = client.latest_block('ethereum')
+    eth_latest = client.block_latest('ethereum')
     print(f"ethereum latest_block is:{eth_latest.blockNumber} blockTimestamp:{eth_latest.blockTimestamp}")
-    bsc_latest = client.latest_block('bsc')
+    time.sleep(1)
+    bsc_latest = client.block_latest('bsc')
     print(f"bsc latest_block is:{bsc_latest.blockNumber} blockTimestamp:{bsc_latest.blockTimestamp}")
 
 
@@ -25,7 +27,8 @@ def loop_for_get_transaction():
     '''
     client = Client(apikey)
     # First, get the latest block
-    latest_block = client.latest_block('ethereum')
+    latest_block = client.block_latest('ethereum')
+    time.sleep(1)
 
     # set the end time for the query
     end_time = latest_block.blockTimestamp
@@ -42,7 +45,7 @@ def loop_for_get_transaction():
 
         start_time = end_time
         # get the latest block again
-        latest_block = client.latest_block('ethereum')
+        latest_block = client.block_latest('ethereum')
         end_time = latest_block.blockTimestamp
         # if latest_block is not updated, do nothing
         if end_time - start_time < 1 * 60:
@@ -71,19 +74,8 @@ def get_history_transaction():
             print(tx.blockNumber, tx.transactionHash)
 
 
-def get_pool_sandwich():
-    '''
-    Get the statistics data of pools sandwiched within 30 days.
-    :return:
-    '''
-    api = Client(apikey)
-    pool_sandwiched_list = api.pool_sandwiched(chain='ethereum')
-    for pool in pool_sandwiched_list:
-        print(pool.address, pool.symbol, pool.sandwichedTrades, pool.sandwichedVolume, pool.trades)
-
-
 if __name__ == '__main__':
     apikey = APIKeys.APIKEY
     latest_block()
+    time.sleep(1)
     loop_for_get_transaction()
-    get_pool_sandwich()
